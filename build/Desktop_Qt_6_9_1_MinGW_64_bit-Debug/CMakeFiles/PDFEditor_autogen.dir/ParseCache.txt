@@ -373,6 +373,6 @@ C:/Users/shrey/Documents/pdf_Editor/mainwindow.h
  mdp:C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wchar.h
  mdp:C:/Users/shrey/Documents/pdf_Editor/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/moc_predefs.h
  mdp:C:/Users/shrey/Documents/pdf_Editor/mainwindow.h
+C:/Users/shrey/Documents/pdf_Editor/main.cpp
 C:/Users/shrey/Documents/pdf_Editor/mainwindow.cpp
  uic:ui_mainwindow.h
-C:/Users/shrey/Documents/pdf_Editor/main.cpp

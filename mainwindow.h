@@ -9,6 +9,9 @@ class QPdfDocument;
 class QPdfView;
 class QSpinBox;
 class QLabel;
+class QPdfSearchModel;
+class QLineEdit;
+
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -26,6 +29,9 @@ private slots:
     void zoomOut();
     void fitWidth();
     void fitPage();
+    void findTextChanged(const QString& s);
+    void findNext();
+    void findPrev();
 
 private:
     void setupUi();
@@ -38,6 +44,9 @@ private:
 
     QSpinBox *m_pageSpin;
     QLabel   *m_pageLabel;
+    QPdfSearchModel* m_search = nullptr;
+    QLineEdit*       m_findEdit = nullptr;
+    int              m_searchIndex = -1;
 };
 
 

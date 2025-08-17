@@ -4,6 +4,10 @@
 #include <QtPdf/QPdfDocument>
 #include <QtPdfWidgets/QPdfView>
 #include <QtPdf/QPdfPageNavigator>
+#include <QtPdf/QPdfSearchModel>
+#include <QtPdf/QPdfLink>
+#include <QLineEdit>
+
 
 #include <QVBoxLayout>
 #include <QToolBar>
@@ -25,6 +29,12 @@ MainWindow::MainWindow(QWidget *parent)
     setupUi();
 
     m_view->setDocument(m_doc);
+    #if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
+        m_search = new QPdfSearchModel(this);
+        m_search->setDocument(m_doc);
+        m_view->setSearchModel(m_search); // lets QPdfView draw highlights
+    #endif
+
     m_view->setZoomMode(QPdfView::ZoomMode::FitToWidth);
     m_view->setPageMode(QPdfView::PageMode::SinglePage);
 
@@ -62,6 +72,16 @@ void MainWindow::setupUi() {
     tb->addAction("Zoom −", this, &MainWindow::zoomOut);
     tb->addAction("Fit Width", this, &MainWindow::fitWidth);
     tb->addAction("Fit Page", this, &MainWindow::fitPage);
+
+    tb->addSeparator();
+    m_findEdit = new QLineEdit(this);
+    m_findEdit->setPlaceholderText("Find…");
+    m_findEdit->setClearButtonEnabled(true);
+    tb->addWidget(m_findEdit);
+    auto prevAct = tb->addAction("⟸", this, &MainWindow::findPrev);
+    auto nextAct = tb->addAction("⟹", this, &MainWindow::findNext);
+    connect(m_findEdit, &QLineEdit::textChanged, this, &MainWindow::findTextChanged);
+
 }
 
 void MainWindow::openPdf() {
@@ -146,6 +166,66 @@ void MainWindow::zoomOut() {
 
 void MainWindow::fitWidth() { m_view->setZoomMode(QPdfView::ZoomMode::FitToWidth); }
 void MainWindow::fitPage()  { m_view->setZoomMode(QPdfView::ZoomMode::FitInView); }
+
+void MainWindow::findTextChanged(const QString& s) {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
+    if (!m_search) return;
+    m_search->setSearchString(s);
+
+    // How many hits?
+#   if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    int n = m_search->count();            // 6.8+: convenience count property
+#   else
+    int n = m_search->rowCount({});       // older: use model rowCount()
+#   endif
+
+    m_searchIndex = (n > 0 ? 0 : -1);
+    m_view->setCurrentSearchResultIndex(m_searchIndex); // frame the hit
+
+    if (m_searchIndex >= 0) {
+        const QPdfLink link = m_search->resultAtIndex(m_searchIndex);
+        if (auto nav = m_view->pageNavigator())
+            nav->jump(link.page(), link.location(), 0); // go to the hit
+    }
+#else
+    Q_UNUSED(s);
+#endif
+}
+
+void MainWindow::findNext() {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
+    if (!m_search) return;
+#   if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    const int n = m_search->count();
+#   else
+    const int n = m_search->rowCount({});
+#   endif
+    if (n <= 0) return;
+    m_searchIndex = (m_searchIndex + 1) % n;
+    m_view->setCurrentSearchResultIndex(m_searchIndex);
+    const QPdfLink link = m_search->resultAtIndex(m_searchIndex);
+    if (auto nav = m_view->pageNavigator())
+        nav->jump(link.page(), link.location(), 0);
+#endif
+}
+
+void MainWindow::findPrev() {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
+    if (!m_search) return;
+#   if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    const int n = m_search->count();
+#   else
+    const int n = m_search->rowCount({});
+#   endif
+    if (n <= 0) return;
+    m_searchIndex = (m_searchIndex - 1 + n) % n;
+    m_view->setCurrentSearchResultIndex(m_searchIndex);
+    const QPdfLink link = m_search->resultAtIndex(m_searchIndex);
+    if (auto nav = m_view->pageNavigator())
+        nav->jump(link.page(), link.location(), 0);
+#endif
+}
+
 
 
 
