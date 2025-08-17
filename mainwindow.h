@@ -5,13 +5,17 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+
+class QWidget;
+class QEvent;
 class QPdfDocument;
 class QPdfView;
 class QSpinBox;
 class QLabel;
 class QPdfSearchModel;
 class QLineEdit;
-
+class QToolButton;
+class QShortcut;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -29,9 +33,15 @@ private slots:
     void zoomOut();
     void fitWidth();
     void fitPage();
+
+    //search slots
     void findTextChanged(const QString& s);
     void findNext();
     void findPrev();
+    void showFindBar();
+    void hideFindBar();
+protected:
+    bool eventFilter(QObject* obj, QEvent* ev) override; // for Enter / Shift+Enter in the find box
 
 private:
     void setupUi();
@@ -44,9 +54,23 @@ private:
 
     QSpinBox *m_pageSpin;
     QLabel   *m_pageLabel;
+
+    //Search Box ka Implementation
     QPdfSearchModel* m_search = nullptr;
+    QWidget*         m_findBar = nullptr;
     QLineEdit*       m_findEdit = nullptr;
+    QLabel*          m_findCount = nullptr;
+    QToolButton*     m_btnPrev = nullptr;
+    QToolButton*     m_btnNext = nullptr;
+    QToolButton*     m_btnClose = nullptr;
     int              m_searchIndex = -1;
+
+
+    // Defining Shortcuts
+    QShortcut* m_scFind = nullptr;
+    QShortcut* m_scNext = nullptr;
+    QShortcut* m_scPrev = nullptr;
+    QShortcut* m_scEsc  = nullptr;
 };
 
 

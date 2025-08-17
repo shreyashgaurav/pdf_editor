@@ -20,6 +20,15 @@
 #include <QMessageBox>
 #include <QPointF>
 
+
+//Header s for search bar - making ir smaller and implementin g shortcuts
+// #include <QLineEdit>
+#include <QToolButton>
+#include <QShortcut>
+#include <QKeyEvent>
+#include <QHBoxLayout>
+#include <QStyle>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow),
     m_doc(new QPdfDocument(this)), m_view(new QPdfView(this)),
@@ -32,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     #if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
         m_search = new QPdfSearchModel(this);
         m_search->setDocument(m_doc);
-        m_view->setSearchModel(m_search); // lets QPdfView draw highlights
+        m_view->setSearchModel(m_search);
     #endif
 
     m_view->setZoomMode(QPdfView::ZoomMode::FitToWidth);
@@ -44,16 +53,46 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() { delete ui; }
 
+
 void MainWindow::setupUi() {
     auto *layout = new QVBoxLayout(ui->centralwidget);
     layout->setContentsMargins(0,0,0,0);
-    layout->addWidget(m_view);
 
+    // 1) Compact find bar (hidden by default)
+    m_findBar = new QWidget(this);
+    m_findBar->setVisible(false);
+    m_findBar->setMaximumHeight(32);
+
+    auto *hb = new QHBoxLayout(m_findBar);
+    hb->setContentsMargins(6, 3, 6, 3);
+    hb->setSpacing(6);
+
+    m_findEdit = new QLineEdit(m_findBar);
+    m_findEdit->setPlaceholderText("Find");
+    m_findEdit->setClearButtonEnabled(true);
+    m_findEdit->installEventFilter(this);    // Enter/Shift+Enter handling
+    hb->addWidget(m_findEdit);
+
+    m_btnPrev = new QToolButton(m_findBar);
+    m_btnPrev->setText("⟸");
+    hb->addWidget(m_btnPrev);
+
+    m_btnNext = new QToolButton(m_findBar);
+    m_btnNext->setText("⟹");
+    hb->addWidget(m_btnNext);
+
+    m_findCount = new QLabel("0/0", m_findBar);
+    hb->addWidget(m_findCount);
+
+    m_btnClose = new QToolButton(m_findBar);
+    m_btnClose->setText("✕");
+    hb->addWidget(m_btnClose);
+
+    // 2) Main toolbar (unchanged)
     auto *tb = addToolBar("Main");
     tb->addAction("Open", this, &MainWindow::openPdf);
     tb->addAction("Save Copy", this, &MainWindow::saveCopyAs);
     tb->addSeparator();
-
     tb->addAction("Prev", this, &MainWindow::prevPage);
     tb->addAction("Next", this, &MainWindow::nextPage);
 
@@ -73,16 +112,28 @@ void MainWindow::setupUi() {
     tb->addAction("Fit Width", this, &MainWindow::fitWidth);
     tb->addAction("Fit Page", this, &MainWindow::fitPage);
 
-    tb->addSeparator();
-    m_findEdit = new QLineEdit(this);
-    m_findEdit->setPlaceholderText("Find…");
-    m_findEdit->setClearButtonEnabled(true);
-    tb->addWidget(m_findEdit);
-    auto prevAct = tb->addAction("⟸", this, &MainWindow::findPrev);
-    auto nextAct = tb->addAction("⟹", this, &MainWindow::findNext);
+    // Add the find bar and the view to the page layout
+    layout->addWidget(m_findBar);
+    layout->addWidget(m_view);
+
+    // Wire find bar actions
+    connect(m_btnPrev,  &QToolButton::clicked, this, &MainWindow::findPrev);
+    connect(m_btnNext,  &QToolButton::clicked, this, &MainWindow::findNext);
+    connect(m_btnClose, &QToolButton::clicked, this, &MainWindow::hideFindBar);
     connect(m_findEdit, &QLineEdit::textChanged, this, &MainWindow::findTextChanged);
 
+    // Global shortcuts
+    m_scFind = new QShortcut(QKeySequence::Find, this);        // Ctrl+F
+    m_scNext = new QShortcut(QKeySequence::FindNext, this);    // F3
+    m_scPrev = new QShortcut(QKeySequence::FindPrevious, this);// Shift+F3
+    m_scEsc  = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+
+    connect(m_scFind, &QShortcut::activated, this, &MainWindow::showFindBar);
+    connect(m_scNext, &QShortcut::activated, this, &MainWindow::findNext);
+    connect(m_scPrev, &QShortcut::activated, this, &MainWindow::findPrev);
+    connect(m_scEsc,  &QShortcut::activated, this, &MainWindow::hideFindBar);
 }
+
 
 void MainWindow::openPdf() {
     const QString fn = QFileDialog::getOpenFileName(this, "Open PDF", {}, "PDF Files (*.pdf)");
@@ -172,21 +223,28 @@ void MainWindow::findTextChanged(const QString& s) {
     if (!m_search) return;
     m_search->setSearchString(s);
 
-    // How many hits?
 #   if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
-    int n = m_search->count();            // 6.8+: convenience count property
+    int n = m_search->count();
 #   else
-    int n = m_search->rowCount({});       // older: use model rowCount()
+    int n = m_search->rowCount({});
 #   endif
 
-    m_searchIndex = (n > 0 ? 0 : -1);
-    m_view->setCurrentSearchResultIndex(m_searchIndex); // frame the hit
-
-    if (m_searchIndex >= 0) {
-        const QPdfLink link = m_search->resultAtIndex(m_searchIndex);
-        if (auto nav = m_view->pageNavigator())
-            nav->jump(link.page(), link.location(), 0); // go to the hit
+    // Empty query or no hits → clear highlights and show 0/0
+    if (s.trimmed().isEmpty() || n == 0) {
+        m_searchIndex = -1;
+        m_view->setCurrentSearchResultIndex(-1);
+        if (m_findCount) m_findCount->setText("0/0");
+        return;
     }
+
+    // Go to first hit
+    m_searchIndex = 0;
+    m_view->setCurrentSearchResultIndex(m_searchIndex);
+    if (m_findCount) m_findCount->setText(QString("%1/%2").arg(m_searchIndex + 1).arg(n));
+
+    const QPdfLink link = m_search->resultAtIndex(m_searchIndex);
+    if (auto nav = m_view->pageNavigator())
+        nav->jump(link.page(), link.location(), 0);
 #else
     Q_UNUSED(s);
 #endif
@@ -200,9 +258,14 @@ void MainWindow::findNext() {
 #   else
     const int n = m_search->rowCount({});
 #   endif
-    if (n <= 0) return;
-    m_searchIndex = (m_searchIndex + 1) % n;
+    if (n <= 0) { if (m_findCount) m_findCount->setText("0/0"); return; }
+
+    if (m_searchIndex < 0) m_searchIndex = 0;
+    else m_searchIndex = (m_searchIndex + 1) % n;
+
     m_view->setCurrentSearchResultIndex(m_searchIndex);
+    if (m_findCount) m_findCount->setText(QString("%1/%2").arg(m_searchIndex + 1).arg(n));
+
     const QPdfLink link = m_search->resultAtIndex(m_searchIndex);
     if (auto nav = m_view->pageNavigator())
         nav->jump(link.page(), link.location(), 0);
@@ -217,14 +280,75 @@ void MainWindow::findPrev() {
 #   else
     const int n = m_search->rowCount({});
 #   endif
-    if (n <= 0) return;
-    m_searchIndex = (m_searchIndex - 1 + n) % n;
+    if (n <= 0) { if (m_findCount) m_findCount->setText("0/0"); return; }
+
+    if (m_searchIndex < 0) m_searchIndex = 0;
+    else m_searchIndex = (m_searchIndex - 1 + n) % n;
+
     m_view->setCurrentSearchResultIndex(m_searchIndex);
+    if (m_findCount) m_findCount->setText(QString("%1/%2").arg(m_searchIndex + 1).arg(n));
+
     const QPdfLink link = m_search->resultAtIndex(m_searchIndex);
     if (auto nav = m_view->pageNavigator())
         nav->jump(link.page(), link.location(), 0);
 #endif
 }
+
+
+//Changes makde so that current / total is visible while searching
+void MainWindow::showFindBar() {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 6, 0))
+    if (!m_findBar) return;
+    m_findBar->setVisible(true);
+    if (m_findEdit) {
+        m_findEdit->setFocus(Qt::ShortcutFocusReason);
+        m_findEdit->selectAll();
+    }
+#   if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    int n = m_search ? m_search->count() : 0;
+#   else
+    int n = m_search ? m_search->rowCount({}) : 0;
+#   endif
+    if (m_findCount) {
+        if (m_searchIndex >= 0 && n > 0)
+            m_findCount->setText(QString("%1/%2").arg(m_searchIndex + 1).arg(n));
+        else
+            m_findCount->setText("0/0");
+    }
+#else
+    QMessageBox::information(this, "Find",
+                             "Upgrade Qt to ≥ 6.6 to enable in-view highlights and navigation.");
+#endif
+}
+
+
+
+
+
+//Error fixes - (Note to self : Mignt need to remove this)
+// Hide the compact find bar (Esc or ✕)
+void MainWindow::hideFindBar() {
+    if (m_findBar && m_findBar->isVisible())
+        m_findBar->setVisible(false);
+}
+
+// Make Enter = Next, Shift+Enter = Prev, Esc = close
+bool MainWindow::eventFilter(QObject* obj, QEvent* ev) {
+    if (obj == m_findEdit && ev->type() == QEvent::KeyPress) {
+        auto *ke = static_cast<QKeyEvent*>(ev);
+        if (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter) {
+            if (ke->modifiers() & Qt::ShiftModifier) findPrev();
+            else findNext();
+            return true; // handled
+        }
+        if (ke->key() == Qt::Key_Escape) {
+            hideFindBar();
+            return true;
+        }
+    }
+    return QMainWindow::eventFilter(obj, ev);
+}
+
 
 
 
