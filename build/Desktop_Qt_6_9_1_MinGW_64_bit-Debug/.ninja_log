@@ -1,0 +1,13 @@
+# ninja log v6
+36	1754	7771374789630647	CMakeFiles/PDFEditor.dir/main.cpp.obj	d6c32bd7976db70e
+8	18	7771374788623971	clean	139b443fbd37261f
+53	103	7771387778052891	CMakeFiles/clean.additional	baedbe210acaa455
+104	118	7771387778530508	clean	139b443fbd37261f
+49	979	7771387956721759	PDFEditor_autogen/timestamp	16707dc448821ddf
+49	979	7771387956721759	PDFEditor_autogen/mocs_compilation.cpp	16707dc448821ddf
+49	979	7771387956721759	C:/Users/shrey/Documents/pdf_Editor/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/timestamp	16707dc448821ddf
+49	979	7771387956721759	C:/Users/shrey/Documents/pdf_Editor/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/mocs_compilation.cpp	16707dc448821ddf
+985	2719	7771387957589383	CMakeFiles/PDFEditor.dir/main.cpp.obj	7fff6aa452c48681
+981	2724	7771387957549545	CMakeFiles/PDFEditor.dir/PDFEditor_autogen/mocs_compilation.cpp.obj	7e11921c8e3d9550
+988	3491	7771387957619394	CMakeFiles/PDFEditor.dir/mainwindow.cpp.obj	108a0a586c709815
+3491	3816	7771387982649696	PDFEditor.exe	64749b3aa7c1493a
