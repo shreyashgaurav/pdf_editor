@@ -5,8 +5,7 @@
 - [ ] Navigate between pages (Next / Previous / Jump to page)
 - [ ] Zoom controls (Zoom in / out / Fit to window)
 - [ ] Annotation tools (highlight, underline, notes)
-- [ ] PDF export with embedded annotations
-- [ ] Page operations: rotate, delete, reorder, extract
+- [ ] PDF export with JSON annotations
 - [ ] Basic toolbar and status bar integration
 
 ---
@@ -15,6 +14,10 @@
 - CMake 3.21 or newer
 - Ninja (optional, but recommended for fast parallel builds)
 - A C++17-compatible compiler (e.g. GCC, Clang, MSVC)
+
+
+<img width="1372" height="1007" alt="image" src="https://github.com/user-attachments/assets/41c2ab4d-acc9-4b98-9626-7df825650c92" />
+
 
 ### Want to Build? Follow these steps
 
