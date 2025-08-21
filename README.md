@@ -16,7 +16,7 @@
 - Ninja (optional, but recommended for fast parallel builds)
 - A C++17-compatible compiler (e.g. GCC, Clang, MSVC)
 
-### Building the Project
+### Want to Build? Follow these steps
 
 ```bash
 # Navigate to project root (outside existing build/ directory)
