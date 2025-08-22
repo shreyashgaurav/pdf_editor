@@ -1,11 +1,13 @@
 #pragma once
 #include <QMainWindow>
-
+#include <QVector>
+#include <QRectF>
+#include <QColor>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-
+enum class MarkupKind { Highlight, Underline, StrikeOut };
 class QWidget;
 class QEvent;
 class QPdfDocument;
@@ -16,6 +18,14 @@ class QPdfSearchModel;
 class QLineEdit;
 class QToolButton;
 class QShortcut;
+
+struct Markup {
+    int page = 0;
+    QVector<QRectF> quadsPts;   // rectangles in PAGE POINTS
+    MarkupKind kind = MarkupKind::Highlight;
+    QColor color = QColor(255, 235, 0, 96); // translucent yellow by default
+};
+class AnnotationOverlay;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -40,6 +50,15 @@ private slots:
     void findPrev();
     void showFindBar();
     void hideFindBar();
+
+    //Anotation slots
+    void startHighlight();
+    void startUnderline();
+    void startStrike();
+    void cancelAnnotate();
+    void exportAnnotations();
+
+
 protected:
     bool eventFilter(QObject* obj, QEvent* ev) override; // for Enter / Shift+Enter in the find box
 
@@ -66,95 +85,30 @@ private:
     int              m_searchIndex = -1;
 
 
+    // --- annotations (overlay + model) ---
+    QVector<Markup>     m_marks;
+    AnnotationOverlay*  m_overlay = nullptr;
+
+    // annotate-by-drag state
+    bool        m_annotateMode = false;
+    MarkupKind  m_pendingKind  = MarkupKind::Highlight;
+    int         m_selPage      = -1;
+    QPointF     m_selStartPts, m_selEndPts;  // page-space (points)
+
+
+
     // Defining Shortcuts
     QShortcut* m_scFind = nullptr;
     QShortcut* m_scNext = nullptr;
     QShortcut* m_scPrev = nullptr;
     QShortcut* m_scEsc  = nullptr;
+
+    //For annotations w
+    bool mapViewportToPage(const QPoint& vpPos, int* outPage, QPointF* outPagePt) const;
+    void addMarkupFromSelection(MarkupKind kind, int page, const QList<QRectF>& quadsPts);
+
+    // sidecar I/O
+    void saveAnnotationsJson(const QString& jsonPath) const;
+    bool loadAnnotationsJson(const QString& jsonPath);
+
 };
-
-
-
-
-
-
-
-
-
-// #pragma once
-// #include <QMainWindow>
-
-// QT_BEGIN_NAMESPACE
-// namespace Ui { class MainWindow; }
-// QT_END_NAMESPACE
-
-// class QPdfDocument;
-// class QPdfView;
-// class QSpinBox;
-// class QLabel;
-
-// class MainWindow : public QMainWindow {
-//     Q_OBJECT
-// public:
-//     explicit MainWindow(QWidget *parent = nullptr);
-//     ~MainWindow();
-
-// private slots:
-//     void openPdf();
-//     void saveCopyAs();
-//     void nextPage();
-//     void prevPage();
-//     void pageSpinChanged(int oneBased);
-//     void zoomIn();
-//     void zoomOut();
-//     void fitWidth();
-//     void fitPage();
-//     void rotateLeft();
-//     void rotateRight();
-
-//     // qpdf-powered edits
-//     void mergePdfs();
-//     void extractRange();
-//     void splitIntoSinglePages();
-
-// private:
-//     void setupUi();
-//     void updatePageUi();
-//     bool ensureQpdf(QString *exePathOut = nullptr) const;
-//     bool runQpdf(const QStringList &args, QString *stderrOut = nullptr) const;
-
-//     Ui::MainWindow *ui;
-//     QPdfDocument   *m_doc;
-//     QPdfView       *m_view;
-//     QString         m_currentFile;
-
-//     QSpinBox *m_pageSpin;
-//     QLabel   *m_pageLabel;
-// };
-
-
-
-
-// #ifndef MAINWINDOW_H
-// #define MAINWINDOW_H
-
-// #include <QMainWindow>
-
-// QT_BEGIN_NAMESPACE
-// namespace Ui {
-// class MainWindow;
-// }
-// QT_END_NAMESPACE
-
-// class MainWindow : public QMainWindow
-// {
-//     Q_OBJECT
-
-// public:
-//     MainWindow(QWidget *parent = nullptr);
-//     ~MainWindow();
-
-// private:
-//     Ui::MainWindow *ui;
-// };
-// #endif // MAINWINDOW_H

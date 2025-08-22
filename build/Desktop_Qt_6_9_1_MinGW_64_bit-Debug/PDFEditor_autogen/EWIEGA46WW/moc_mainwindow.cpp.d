@@ -1,5 +1,7 @@
 C:/Users/shrey/Documents/pdf_Editor/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/EWIEGA46WW/moc_mainwindow.cpp: C:/Users/shrey/Documents/pdf_Editor/mainwindow.h \
   C:/Users/shrey/Documents/pdf_Editor/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/moc_predefs.h \
+  C:/Qt/6.9.1/mingw_64/include/QtCore/QRectF \
+  C:/Qt/6.9.1/mingw_64/include/QtCore/QVector \
   C:/Qt/6.9.1/mingw_64/include/QtCore/q17memory.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/q20functional.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/q20iterator.h \
@@ -122,9 +124,11 @@ C:/Users/shrey/Documents/pdf_Editor/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PD
   C:/Qt/6.9.1/mingw_64/include/QtCore/qutf8stringview.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/qvariant.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/qvarlengtharray.h \
+  C:/Qt/6.9.1/mingw_64/include/QtCore/qvector.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/qversiontagging.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/qxptype_traits.h \
   C:/Qt/6.9.1/mingw_64/include/QtCore/qyieldcpu.h \
+  C:/Qt/6.9.1/mingw_64/include/QtGui/QColor \
   C:/Qt/6.9.1/mingw_64/include/QtGui/qaction.h \
   C:/Qt/6.9.1/mingw_64/include/QtGui/qbitmap.h \
   C:/Qt/6.9.1/mingw_64/include/QtGui/qbrush.h \

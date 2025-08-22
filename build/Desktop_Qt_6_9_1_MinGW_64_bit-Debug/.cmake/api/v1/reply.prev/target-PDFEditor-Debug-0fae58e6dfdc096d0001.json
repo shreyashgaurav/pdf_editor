@@ -48,7 +48,7 @@
 			{
 				"command" : 3,
 				"file" : 1,
-				"line" : 16,
+				"line" : 20,
 				"parent" : 0
 			},
 			{
@@ -72,19 +72,19 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 27,
+				"line" : 31,
 				"parent" : 0
 			},
 			{
 				"command" : 5,
 				"file" : 1,
-				"line" : 21,
+				"line" : 25,
 				"parent" : 0
 			},
 			{
 				"command" : 8,
 				"file" : 1,
-				"line" : 7,
+				"line" : 11,
 				"parent" : 0
 			},
 			{
@@ -276,6 +276,10 @@
 			"includes" : 
 			[
 				{
+					"backtrace" : 0,
+					"path" : "C:/Users/shrey/Documents/pdf_Editor/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/include"
+				},
+				{
 					"backtrace" : 23,
 					"isSystem" : true,
 					"path" : "C:/Qt/6.9.1/mingw_64/include/QtCore"
@@ -334,8 +338,19 @@
 			"sourceIndexes" : 
 			[
 				0,
-				1
+				1,
+				2
 			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"id" : "PDFEditor_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "PDFEditor_autogen::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "PDFEditor::@6890427a1f51a3e7e1df",
@@ -441,26 +456,49 @@
 			"sourceIndexes" : 
 			[
 				0,
-				1
+				1,
+				2
 			]
 		},
 		{
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				2
+				3,
+				5
 			]
 		},
 		{
 			"name" : "Forms",
 			"sourceIndexes" : 
 			[
-				3
+				4
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				6
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				7
 			]
 		}
 	],
 	"sources" : 
 	[
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/mocs_compilation.cpp",
+			"sourceGroupIndex" : 0
+		},
 		{
 			"backtrace" : 4,
 			"compileGroupIndex" : 0,
@@ -482,6 +520,24 @@
 			"backtrace" : 4,
 			"path" : "mainwindow.ui",
 			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/include/ui_mainwindow.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/timestamp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug/PDFEditor_autogen/timestamp.rule",
+			"sourceGroupIndex" : 4
 		}
 	],
 	"type" : "EXECUTABLE"

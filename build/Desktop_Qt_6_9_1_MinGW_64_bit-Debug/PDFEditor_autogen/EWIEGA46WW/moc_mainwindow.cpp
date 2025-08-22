@@ -55,7 +55,12 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         "findNext",
         "findPrev",
         "showFindBar",
-        "hideFindBar"
+        "hideFindBar",
+        "startHighlight",
+        "startUnderline",
+        "startStrike",
+        "cancelAnnotate",
+        "exportAnnotations"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -91,6 +96,16 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         QtMocHelpers::SlotData<void()>(16, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'hideFindBar'
         QtMocHelpers::SlotData<void()>(17, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'startHighlight'
+        QtMocHelpers::SlotData<void()>(18, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'startUnderline'
+        QtMocHelpers::SlotData<void()>(19, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'startStrike'
+        QtMocHelpers::SlotData<void()>(20, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'cancelAnnotate'
+        QtMocHelpers::SlotData<void()>(21, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'exportAnnotations'
+        QtMocHelpers::SlotData<void()>(22, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -128,6 +143,11 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 11: _t->findPrev(); break;
         case 12: _t->showFindBar(); break;
         case 13: _t->hideFindBar(); break;
+        case 14: _t->startHighlight(); break;
+        case 15: _t->startUnderline(); break;
+        case 16: _t->startStrike(); break;
+        case 17: _t->cancelAnnotate(); break;
+        case 18: _t->exportAnnotations(); break;
         default: ;
         }
     }
@@ -152,14 +172,14 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 14)
+        if (_id < 19)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 19;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 14)
+        if (_id < 19)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 14;
+        _id -= 19;
     }
     return _id;
 }
