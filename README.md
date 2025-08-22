@@ -27,6 +27,6 @@ cmake -S . -B build -G "Ninja" \\
       -DCMAKE_PREFIX_PATH="<path-to-Qt-6>/lib/cmake"
 cmake --build build --config Debug
 
-# Running the app (depending on your system/config):
+# Running the app (depending on the system/config):
 ./build/pdf_editor        # on Linux/macOS
 build\\Debug\\pdf_editor.exe  # on Windows (Ninja + Debug)
